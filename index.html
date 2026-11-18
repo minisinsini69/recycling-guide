@@ -230,7 +230,12 @@ Object.assign(CATS, {
 });
 
 const ORDER = ["general","food","plastic","paper","cans","electronics","furniture","dishes"];
-let lang = "ru";
+function detectLang() {
+  try { const saved = localStorage.getItem("lang"); if (saved && UI[saved]) return saved; } catch (e) {}
+  const code = String(navigator.language || "en").slice(0, 2).toLowerCase();
+  return UI[code] ? code : "en";
+}
+let lang = detectLang();
 const t = k => UI[lang][k];
 const esc = s => s;
 
@@ -492,7 +497,7 @@ function showPreview(e) {
   img.style.display = "block";
 }
 
-document.getElementById("langSelect").addEventListener("change", e => { lang = e.target.value; render(); if (photoFile && photoAnswer && location.hash === "#photo") analyzePhoto(); });
+document.getElementById("langSelect").addEventListener("change", e => { lang = e.target.value; try { localStorage.setItem("lang", lang); } catch (err) {} render(); if (photoFile && photoAnswer && location.hash === "#photo") analyzePhoto(); });
 window.addEventListener("hashchange", render);
 document.getElementById("themeBtn").addEventListener("click", () => { theme = theme === "3d" ? "toon" : "3d"; applyTheme(); });
 render();
